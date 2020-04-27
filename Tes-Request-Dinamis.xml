@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="eedb790f-51ef-4815-b268-e7f6df0912d5" activeEnvironment="Default" name="Tes Request Dinamis" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:testSuite id="6c63a859-54b0-420a-bc98-65340cb299d9" name="TestSuite 1"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="daf75098-a671-4040-97bd-2cd4a09603b8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="PostTicket" searchProperties="true"><con:settings/><con:testStep type="groovy" name="Groovy Script" id="409bb0f4-20a4-42d1-a391-8d807d842fe7"><con:settings/><con:config><script>import groovy.json.*
+import com.eviware.soapui.support.types.StringToStringMap 
+import com.eviware.soapui.SoapUI
+
+def ticket_number = org.apache.commons.lang.RandomStringUtils.randomNumeric(6)
+def date=new Date().format("yyyy-MM-dd")
+def first_name = "koko"
+def vamount = "100.000"
+
+def req = ["ticket_number" : ticket_number,
+            "date": date, 
+            "first_name":first_name,
+            "amount": vamount]
+
+def jsonreq = new groovy.json.JsonBuilder()
+jsonreq req
+log.info(req)
+
+RequestMessage = groovy.json.JsonOutput.prettyPrint(jsonreq.toString())
+testRunner.testCase.setPropertyValue( "RequestMessage", RequestMessage )</script></con:config></con:testStep><con:testStep type="httprequest" name="HTTP Request" id="fe4b0417-d601-44cd-b315-f492b95a00ef"><con:settings/><con:config method="POST" xsi:type="con:HttpRequest" id="ffeb9537-a732-463a-a520-86d2550e8730" name="HTTP Request" postQueryString="false" mediaType="application/json" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://127.0.0.1:8585/ticket</con:endpoint><con:request>${#TestCase#RequestMessage}</con:request><con:assertion type="Valid HTTP Status Codes" id="34bb6db2-f700-4e86-9d42-3b4c4dd6cd68" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:config></con:testStep><con:properties><con:property><con:name>RequestMessage</con:name><con:value>{
+    "ticket_number": "296595",
+    "date": "2020-04-27",
+    "first_name": "koko",
+    "amount": "100.000"
+}</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:restMockService id="c2e4974b-2935-4f9c-b9f9-072975c6d5c6" port="8585" path="/" host="AJD-SLW0419" name="REST MockService 1" docroot=""><con:settings/><con:properties/><con:restMockAction name="/ticket" method="POST" resourcePath="/ticket" id="e8370270-8860-4a19-83bf-418858d2a31e"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>import com.eviware.soapui.SoapUI
+import groovy.time.TimeCategory
+import groovy.json.*
+
+def slurper = new JsonSlurper()
+def vgmt = new Date().format("yyyy-MM-dd")
+def JsonRQ = slurper.parseText(mockRequest.getRequestContent())
+def vticket_number = JsonRQ.ticket_number
+def vfirst_name = JsonRQ.first_name
+
+//hard code
+//def vfirst_name = "koko"
+def vamount = JsonRQ.amount
+
+/*
+def vgmt = new Date().format("yyyy-MM-dd")
+def vticket_number = JsonRQ.ticket_number
+//def vticket_number = "AAbbcc123"
+def vfirst_name = "koko"
+def vamount = 100.000*/
+
+def status = "success"
+def ResponseMessage = ["date_time":vgmt, "ticket_number":vticket_number, "first_name":vfirst_name,"amount":vamount, "status":status]
+
+def json = new groovy.json.JsonBuilder()
+json ResponseMessage
+log.info (ResponseMessage)
+
+context.ResponseMessage = groovy.json.JsonOutput.prettyPrint(json.toString())
+return "Response 1"</con:dispatchPath><con:response name="Response 1" id="bdc9e0d2-fcb5-46da-8e4a-a2ac9b4f764e" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>${ResponseMessage}</con:responseContent></con:response></con:restMockAction></con:restMockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
